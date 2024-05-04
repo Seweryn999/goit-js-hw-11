@@ -1,5 +1,5 @@
 import Notiflix from 'notiflix';
-// import SimpleLightbox from 'simplelightbox';
+import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { searchPhrase } from './requests';
 
@@ -30,7 +30,7 @@ const handleSearch = (value, resetPage = true) => {
   searchPhrase(value, page)
     .then(response => {
       const { data, totalHits } = response.data;
-      if (!data.length) {
+      if (!data || !data.length) {
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
@@ -43,6 +43,11 @@ const handleSearch = (value, resetPage = true) => {
       if (totalHits < 40) loadMore.setAttribute('hidden', '');
       else loadMore.removeAttribute('hidden');
       lightbox.refresh();
+
+      const { height: cardHeight } = document
+        .querySelector('.gallery')
+        .firstElementChild.getBoundingClientRect();
+      window.scrollBy({ top: cardHeight * 2, behavior: 'smooth' });
     })
     .catch(error => {
       Notiflix.Report.failure(
@@ -63,10 +68,5 @@ loadMore.addEventListener('click', () => {
   page++;
   handleSearch(inputForm.value, false);
 });
-
-const { height: cardHeight } = document
-  .querySelector('.gallery')
-  .firstElementChild.getBoundingClientRect();
-window.scrollBy({ top: cardHeight * 2, behavior: 'smooth' });
 
 const lightbox = new SimpleLightbox('.gallery a', {});
