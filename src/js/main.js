@@ -29,15 +29,16 @@ const handleSearch = (value, resetPage = true) => {
 
   searchPhrase(value, page)
     .then(response => {
-      const { data, totalHits } = response.data;
-      if (!data || !data.length) {
+      const { hits, totalHits } = response.data; // Zmiana z data na hits i totalHits
+      if (!hits || !hits.length) {
+        // Poprawka dla hits
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
         return;
       }
       Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
-      const cards = data.map(cardTemplate).join('');
+      const cards = hits.map(cardTemplate).join(''); // Poprawka dla hits
       if (resetPage) gallery.innerHTML = cards;
       else gallery.innerHTML += cards;
       if (totalHits < 40) loadMore.setAttribute('hidden', '');
